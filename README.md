@@ -11,6 +11,10 @@ O BenchMoo inclui várias funcionalidades como:
 - Monitoramento dos componentes: Ao chegar em 90% ele desliga
 - contador de vacas: conta vacas, obviamente.
 - Cálculo da média: calcula a média de desempenho.
+
+# Aviso ⚠️ 
+
+O BenchMoo só funciona com GPUs NVidia, em caso de uma GPU de outra marca, ele irá usar apenas RAM e CPU.
 # Licença
 
 esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
