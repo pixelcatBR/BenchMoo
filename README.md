@@ -26,7 +26,7 @@ esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
 2. instale as dependências com o comando a baixo:
 
 ```
-pip install --break-system-packages PyQt5 psutil
+pip install PyQt5 psutil
 ```
 3. mova os arquivos para a raiz da sua pasta home
 4. execute com o comando abaixo:
