@@ -5,7 +5,7 @@ Você já imaginou fazer um benchmark com vacas? provavelmente não, por isso qu
 
 # Funcionalidades
 
-O BenchMoo incluí várias features como:
+O BenchMoo inclui várias funcionalidades como:
 
 - MooScore: um sistema de pontuação próprio
 - Monitoramento dos componentes: Ao chegar em 90% ele desliga
