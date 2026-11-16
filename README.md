@@ -13,8 +13,7 @@ O BenchMoo inclui várias funcionalidades como:
 - Cálculo da média: calcula a média de desempenho.
 
 # Aviso ⚠️ 
-
-O BenchMoo só funciona com GPUs NVidia, em caso de uma GPU de outra marca, ele irá usar apenas RAM e CPU.
+O monitoramento de GPU está disponível apenas para placas NVIDIA com nvidia-smi. Em placas de outras marcas, o BenchMoo continua funcionando normalmente, monitorando CPU e RAM.
 # Licença
 
 esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
