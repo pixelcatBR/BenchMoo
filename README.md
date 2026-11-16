@@ -1,5 +1,6 @@
 # BenchMoo
 
+![BenchMoo](print.png)
 Você já imaginou fazer um benchmark com vacas? provavelmente não, por isso que eu criei esse projeto! 
 
 # Licença
