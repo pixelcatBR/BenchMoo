@@ -19,8 +19,14 @@ esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
 
 1. baixe o código fonte
 
-2. mova os arquivos para a raiz da sua pasta home
-3. execute com o comando abaixo:
+2. instale as dependências com o comando a baixo:
+
+```
+pip install --break-system-packages PyQt5 psutil
+```
+3. mova os arquivos para a raiz da sua pasta home
+4. 
+5. execute com o comando abaixo:
 
 ```
 python3 main.py
