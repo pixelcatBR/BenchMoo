@@ -1,8 +1,16 @@
 # BenchMoo
 
 ![BenchMoo](print.png)
-Você já imaginou fazer um benchmark com vacas? provavelmente não, por isso que eu criei esse projeto! 
+Você já imaginou fazer um benchmark com vacas? provavelmente não, por isso que eu criei o projeto! 
 
+# Funcionalidades
+
+O BenchMoo incluí várias features como:
+
+- MooScore: um sistema de pontuação próprio
+- Monitoramento dos componentes: Ao chegar em 90% ele desliga
+- contador de vacas: conta vacas, obviamente.
+- Cálculo da média: calcula a média de desempenho.
 # Licença
 
 esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
