@@ -15,7 +15,7 @@ FPS (atual/melhor/média/mínimo/desvio), o cálculo do limite e um histórico.
 O overlay no canto da tela mostra o contador de vacas.
 
 Instalar:  pip install PyQt5 psutil
-Rodar:     python3 benchmoo.py
+Rodar:     python3 main.py
 Sair:      botão "Parar e sair", fechar a janela ou Ctrl+C no terminal.
 GPU:       só é lida em placas NVIDIA (usa o nvidia-smi). Sem ele, só CPU e RAM.
 """
