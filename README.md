@@ -3,11 +3,21 @@
 ![BenchMoo](print.png)
 Você já imaginou fazer um benchmark com vacas? provavelmente não, por isso que eu criei o projeto! 
 
+# MooScore
+
+Agora é possível uploadar seus resultados! tem ranking, upload e muito mais!
+
+disponível em:
+
+```site
+https://pixelcatbr.github.io/MooScore/
+```
+
 # Funcionalidades
 
 O BenchMoo inclui várias funcionalidades como:
 
-- MooScore: um sistema de pontuação próprio
+- MooScore: um sistema de pontuação próprio para o site do MooScore
 - Monitoramento dos componentes: Ao chegar em 90% ele desliga
 - contador de vacas: conta vacas, obviamente.
 - Cálculo da média: calcula a média de desempenho.
