@@ -33,7 +33,7 @@ esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
 ## Linux
 1. baixe o código fonte
 
-2. instale as dependências com o comando a baixo:
+2. instale as dependências com o comando abaixo:
 
 ```
 pip install PyQt5 psutil
