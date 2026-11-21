@@ -46,6 +46,8 @@ python3 main.py
 ```
 ## Windows
 
-1. baixe o código fonte
+1. baixe o código fonte em formato zip
 
-2. execute o arquivo run.bat
+2. extraia o zip
+
+3. execute o arquivo run.bat
