@@ -30,6 +30,7 @@ esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
 
 # Como Instalar
 
+## Linux
 1. baixe o código fonte
 
 2. instale as dependências com o comando a baixo:
@@ -43,3 +44,8 @@ pip install PyQt5 psutil
 ```
 python3 main.py
 ```
+## Windows
+
+1. baixe o código fonte
+
+2. execute o arquivo run.bat
