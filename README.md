@@ -38,8 +38,8 @@ esse projeto usa a licença MIT. leia o arquivo de licença para mais detalhes.
 ```
 pip install PyQt5 psutil
 ```
-3. mova os arquivos para a raiz da sua pasta home
-4. execute com o comando abaixo:
+
+3. execute com o comando abaixo:
 
 ```
 python3 main.py
