@@ -3,7 +3,7 @@
 BenchMoo 🐮 - benchmark meme
 
 Como funciona:
-  1. Cada vaca é o teu ~/cow.py rodando como SUBPROCESS (um processo por vaca).
+  1. Cada vaca é o teu cow.py rodando como SUBPROCESS (um processo por vaca).
   2. A cada 2s as vacas DOBRAM (1 -> 2 -> 4 -> 8 ...).
   3. Isso continua até algum componente (CPU, RAM ou GPU) chegar no LIMITE_USO (%).
      Esse é o "nível máximo": o componente que bateu o limite é o gargalo.
@@ -15,9 +15,14 @@ FPS (atual/melhor/média/mínimo/desvio), o cálculo do limite e um histórico.
 O overlay no canto da tela mostra o contador de vacas.
 
 Instalar:  pip install PyQt5 psutil
-Rodar:     python3 main.py
+Rodar:     python3 benchmoo.py   (ou  python benchmoo.py  no Windows)
 Sair:      botão "Parar e sair", fechar a janela ou Ctrl+C no terminal.
 GPU:       só é lida em placas NVIDIA (usa o nvidia-smi). Sem ele, só CPU e RAM.
+
+Compatibilidade:
+  - Linux e Windows.
+  - cow.py, vaca.png e vaca_mugido.mp3 são procurados na MESMA pasta deste script.
+  - No Windows, os subprocessos rodam sem abrir janela de console.
 """
 
 import sys
@@ -44,15 +49,24 @@ except ImportError:
 
 
 # ------------------------------ CONFIGURAÇÕES ------------------------------
-HOME = Path.home()
-COW_PATH = HOME / "cow.py"                 # o teu código da vaca
-RECORDE_PATH = HOME / ".benchmoo_best.json"
+# pasta onde ESTE arquivo está (funciona em Linux e Windows)
+BASE_DIR = Path(__file__).resolve().parent
+
+COW_PATH = BASE_DIR / "cow.py"                 # o teu código da vaca
+VACA_PNG = BASE_DIR / "vaca.png"               # ícone do overlay (opcional)
+RECORDE_PATH = BASE_DIR / ".benchmoo_best.json"
 
 LIMITE_USO = 90         # % de uso que define o "nível máximo" (de qualquer componente)
 MAX_SEGURANCA = 200     # trava de segurança: nunca passa desse número de vacas
 INTERVALO_MS = 2000     # tempo entre cada "dobra" de vacas
 SEGURAR_MS = 4000       # quanto tempo mede no nível máximo antes de finalizar
 SUAVIZAR = 3            # usa a média das últimas N leituras (1 leitura = 0,5s)
+
+# No Windows, esconde a janela de console dos subprocessos
+if sys.platform.startswith("win"):
+    CREATE_NO_WINDOW = 0x08000000
+else:
+    CREATE_NO_WINDOW = 0
 # ---------------------------------------------------------------------------
 
 
@@ -66,9 +80,12 @@ def nvidia_smi(campos):
     if not shutil.which("nvidia-smi"):
         return None
     try:
+        kwargs = {}
+        if sys.platform.startswith("win"):
+            kwargs["creationflags"] = CREATE_NO_WINDOW
         saida = subprocess.run(
             ["nvidia-smi", f"--query-gpu={campos}", "--format=csv,noheader,nounits"],
-            capture_output=True, text=True, timeout=2,
+            capture_output=True, text=True, timeout=2, **kwargs,
         )
         if saida.returncode != 0 or not saida.stdout.strip():
             return None
@@ -122,16 +139,16 @@ class ContadorOverlay(QWidget):
     def __init__(self):
         super().__init__()
 
-        # mesmas flags do teu cow.py: sem borda, sempre por cima, fundo transparente
+        # sem borda, sempre por cima, fundo transparente, mouse atravessa
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.Tool)
         self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setAttribute(Qt.WA_TransparentForMouseEvents)  # o mouse atravessa
+        self.setAttribute(Qt.WA_TransparentForMouseEvents)
 
         layout = QHBoxLayout(self)
 
-        # ícone: usa o vaca.png da home, ou o emoji se não achar
+        # ícone: usa o vaca.png da mesma pasta, ou o emoji se não achar
         self.icone = QLabel()
-        pixmap = QPixmap(str(HOME / "vaca.png"))
+        pixmap = QPixmap(str(VACA_PNG))
         if not pixmap.isNull():
             self.icone.setPixmap(pixmap.scaled(80, 80, Qt.KeepAspectRatio,
                                                Qt.SmoothTransformation))
@@ -284,11 +301,16 @@ class BenchMoo(QWidget):
     def lancar_vaca(self):
         """Roda o cow.py como subprocesso (uma vaca = um processo)."""
         try:
+            kwargs = {}
+            if sys.platform.startswith("win"):
+                kwargs["creationflags"] = CREATE_NO_WINDOW
+
             p = subprocess.Popen(
                 [sys.executable, str(COW_PATH)],
-                cwd=str(HOME),  # o cow.py procura vaca.png e o mp3 aqui
+                cwd=str(BASE_DIR),  # o cow.py procura vaca.png e o mp3 na pasta dele
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
+                **kwargs,
             )
             self.processos.append(p)
         except Exception as erro:
@@ -299,7 +321,7 @@ class BenchMoo(QWidget):
         return sum(1 for p in self.processos if p.poll() is None)
 
     def suavizado(self, nome):
-        """Média das últimas leituras de um componente (evita decidir por um pico."""
+        """Média das últimas leituras de um componente (evita decidir por um pico)."""
         return media(self.leituras[nome])
 
     def gargalo(self):
@@ -476,9 +498,26 @@ class BenchMoo(QWidget):
 
     # ------------------------------ sair ------------------------------
     def matar_vacas(self):
+        """Encerra todos os subprocessos das vacas (funciona em Linux e Windows)."""
         for p in self.processos:
-            if p.poll() is None:
-                p.terminate()
+            if p.poll() is not None:
+                continue
+            try:
+                if sys.platform.startswith("win"):
+                    # no Windows, terminate() não mata filhos (mpg123/ffplay etc.)
+                    subprocess.run(
+                        ["taskkill", "/F", "/T", "/PID", str(p.pid)],
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                        creationflags=CREATE_NO_WINDOW,
+                    )
+                else:
+                    p.terminate()
+            except Exception:
+                try:
+                    p.kill()
+                except Exception:
+                    pass
 
     def closeEvent(self, event):
         self.matar_vacas()
@@ -491,13 +530,24 @@ def main():
     app = QApplication(sys.argv)
 
     if not COW_PATH.exists():
-        sys.exit(f"Não achei {COW_PATH}. Coloque o cow.py na sua pasta home.")
+        sys.exit(f"Não achei {COW_PATH}.\n"
+                 f"Coloque o cow.py na mesma pasta do benchmoo.py:\n  {BASE_DIR}")
 
     janela = BenchMoo()
     janela.show()
 
-    # Ctrl+C no terminal também fecha tudo
-    signal.signal(signal.SIGINT, lambda *args: janela.close())
+    # Ctrl+C no terminal também fecha tudo.
+    # No Windows, SIGINT + Qt não se dão bem; o handler apenas agenda o
+    # fechamento via QTimer.singleShot (thread-safe).
+    def _fechar(*_args):
+        QTimer.singleShot(0, janela.close)
+
+    try:
+        signal.signal(signal.SIGINT, _fechar)
+    except Exception:
+        pass
+
+    # timer "vazio" para o Python processar sinais entre eventos do Qt
     timer_sinal = QTimer()
     timer_sinal.timeout.connect(lambda: None)
     timer_sinal.start(250)
