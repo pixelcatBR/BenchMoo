@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BenchMoo 🐮 — quantas vacas a tua máquina aguenta?</title>
+<meta name="description" content="BenchMoo é um benchmark meme: dobra vacas até a máquina não aguentar mais. Versão original em Python e versão web.">
+<style>
+  :root {
+    --tinta: #1b2430;
+    --suave: #5d6b7d;
+    --linha: #d9e0ea;
+    --grama: #2b8a3e;
+    --grama-escura: #1f6b2e;
+    --alerta: #c92a2a;
+    --azul-grid: 47, 110, 200;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    --sans: "Avenir Next", "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; font-family: var(--sans); color: var(--tinta); line-height: 1.55;
+    background-color: #fff;
+    background-image:
+      linear-gradient(rgba(var(--azul-grid), .09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--azul-grid), .09) 1px, transparent 1px),
+      linear-gradient(rgba(var(--azul-grid), .17) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--azul-grid), .17) 1px, transparent 1px);
+    background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+    background-position: -1px -1px;
+  }
+  [hidden] { display: none !important; }
+  a { color: var(--grama-escura); }
+  a:focus-visible, button:focus-visible { outline: 3px solid rgba(var(--azul-grid), .6); outline-offset: 2px; }
+  .mono { font-family: var(--mono); font-size: .9em; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 22px; }
+  section { padding: 56px 0; }
+  h2 { font-size: clamp(28px, 4.5vw, 40px); line-height: 1.1; letter-spacing: -.03em; margin: 0 0 14px; }
+  .lead { font-size: 18px; color: var(--suave); max-width: 60ch; margin: 0 0 24px; }
+
+  .btn {
+    display: inline-block; font: inherit; font-weight: 800; text-decoration: none; cursor: pointer;
+    border: 2px solid var(--tinta); background: #fff; color: var(--tinta);
+    padding: 12px 20px; border-radius: 10px;
+  }
+  .btn:hover { background: #eef2f7; }
+  .btn.principal { background: var(--grama); border-color: var(--grama-escura); color: #fff; font-size: 18px; padding: 14px 26px; }
+  .btn.principal:hover { background: var(--grama-escura); }
+
+  .card { background: rgba(255,255,255,.94); border: 1px solid var(--linha); border-radius: 14px; padding: 22px; }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 48px 0 32px; position: relative; overflow: hidden; }
+  .marca {
+    position: absolute; right: -2%; top: 12px; z-index: 0;
+    font-weight: 900; letter-spacing: -.05em; line-height: .8;
+    font-size: clamp(90px, 22vw, 300px); color: rgba(27, 36, 48, .055);
+    pointer-events: none; user-select: none; white-space: nowrap;
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+  .hero h1 { margin: 0; font-size: clamp(56px, 12vw, 128px); line-height: .9; letter-spacing: -.06em; font-weight: 900; }
+  .hero .sub { font-size: clamp(18px, 2.4vw, 24px); max-width: 30ch; margin: 18px 0 26px; font-weight: 600; letter-spacing: -.01em; }
+  .hero .acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* ---------- curral (demo) ---------- */
+  .curral-box { margin-top: 36px; display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: stretch; }
+  .curral {
+    min-height: 230px; background: rgba(255,255,255,.9); border: 2px solid var(--tinta); border-radius: 14px;
+    padding: 14px; display: flex; flex-wrap: wrap; align-content: flex-end; gap: 6px; overflow: hidden;
+  }
+  .vaca { width: var(--t, 72px); height: var(--t, 72px); display: grid; place-items: center; font-size: calc(var(--t, 72px) * .8); line-height: 1; flex: none; }
+  .vaca img { width: 100%; height: 100%; object-fit: contain; }
+  .vaca.nova { animation: pop .35s ease-out; }
+  @keyframes pop { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .painel { display: flex; flex-direction: column; justify-content: space-between; gap: 14px; min-width: 190px; }
+  .num { font-size: 64px; font-weight: 900; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .num small { display: block; font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--suave); margin-top: 6px; }
+  .trava { color: var(--alerta); font-weight: 800; }
+
+  /* ---------- como funciona ---------- */
+  .passos { list-style: none; margin: 0 0 28px; padding: 0; display: grid; gap: 12px; counter-reset: p; }
+  .passos li { counter-increment: p; display: grid; grid-template-columns: 44px 1fr; gap: 14px; align-items: start; }
+  .passos li::before {
+    content: counter(p); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--tinta); color: #fff; font-weight: 900; font-size: 20px;
+  }
+  .passos b { display: block; font-size: 18px; letter-spacing: -.01em; }
+  .passos span { color: var(--suave); }
+  .formula {
+    border: 2px solid var(--grama); border-radius: 14px; background: #fff; padding: 20px 22px;
+    font-size: clamp(20px, 3.2vw, 30px); font-weight: 800; letter-spacing: -.02em;
+  }
+  .formula small { display: block; font-size: 14px; font-weight: 500; color: var(--suave); letter-spacing: 0; margin-top: 6px; }
+
+  /* ---------- versões ---------- */
+  .versoes { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 24px; }
+  .versoes h3 { margin: 6px 0 8px; font-size: 26px; letter-spacing: -.03em; }
+  .versoes p { margin: 0 0 16px; }
+  .selo { display: inline-block; font-family: var(--mono); font-size: 13px; border: 1.5px solid var(--tinta); border-radius: 999px; padding: 2px 10px; }
+  .versoes .web { border: 2px solid var(--grama); }
+  .tabela-rolagem { overflow-x: auto; border: 1px solid var(--linha); border-radius: 14px; background: #fff; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 15px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  th { background: #f3f6fb; }
+  tr:last-child td { border-bottom: 0; }
+  td:first-child { font-weight: 700; width: 22%; }
+  .nota { color: var(--suave); margin: 14px 0 0; }
+
+  /* ---------- rodar ---------- */
+  .rodar { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .rodar h3 { margin: 0 0 10px; font-size: 22px; letter-spacing: -.02em; }
+  pre { margin: 0 0 12px; background: #151b24; color: #e8eef7; border-radius: 10px; padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 14px; }
+  .rodar ul { margin: 0; padding-left: 20px; }
+  .rodar li { margin: 5px 0; }
+
+  footer { padding: 30px 0 56px; color: var(--suave); border-top: 1px solid var(--linha); background: rgba(255,255,255,.9); }
+
+  @media (max-width: 760px) {
+    .curral-box, .versoes, .rodar { grid-template-columns: 1fr; }
+    section { padding: 40px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .vaca.nova { animation: none; } }
+</style>
+</head>
+<body>
+
+<!-- ============================ HERO ============================ -->
+<header class="hero">
+  <div class="marca" aria-hidden="true">moo</div>
+  <div class="wrap">
+    <h1>BenchMoo</h1>
+    <p class="sub">Quantas vacas a tua máquina aguenta?</p>
+    <div class="acoes">
+      <a class="btn principal" href="teste.html">Testar no navegador</a>
+      <a class="btn" href="#versoes">Ver as duas versões</a>
+    </div>
+
+    <div class="curral-box">
+      <div class="curral" id="curral" aria-label="Vacas na demonstração"></div>
+      <div class="painel">
+        <div class="num" aria-live="polite"><span id="demo-num">x 1</span><small id="demo-legenda">uma vaca, tudo calmo</small></div>
+        <button class="btn principal" id="dobrar" style="font-size:18px">Dobrar as vacas</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============================ COMO FUNCIONA ============================ -->
+<section id="como">
+  <div class="wrap">
+    <h2>Como funciona</h2>
+    <p class="lead">Um benchmark meme. Em vez de calcular pontos em um jogo, ele enche a tela de vacas até alguma coisa na máquina chegar no limite.</p>
+
+    <ol class="passos">
+      <li><div><b>Entra uma vaca</b><span>Cada vaca é uma janelinha que atravessa a tela, muge no meio e sai pelo outro lado.</span></div></li>
+      <li><div><b>A cada 2 segundos as vacas dobram</b><span>1, 2, 4, 8, 16… Cada vaca é independente das outras.</span></div></li>
+      <li><div><b>Até algum componente chegar no limite</b><span>O componente que bateu o limite é o gargalo, e esse é o nível máximo. Existe uma trava de segurança para não passar de um número máximo de vacas.</span></div></li>
+      <li><div><b>Segura a carga por 4 segundos</b><span>Nesse tempo ele mede o FPS com tudo no talo.</span></div></li>
+      <li><div><b>Sai o MooScore</b><span>A pontuação junta quantas vacas a máquina aguentou com o quão fluido tudo continuou.</span></div></li>
+    </ol>
+
+    <div class="formula">
+      MooScore = vacas no pico × FPS médio sob carga
+      <small>Exemplo: 100 vacas × 60 FPS = MooScore 6000.</small>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ VERSÕES ============================ -->
+<section id="versoes">
+  <div class="wrap">
+    <h2>Duas versões</h2>
+    <p class="lead">A original é um programa de desktop em Python. A web roda no navegador, sem instalar nada.</p>
+
+    <div class="versoes">
+      <article class="card" id="original">
+        <span class="selo">Python · PyQt5</span>
+        <h3>Original</h3>
+        <p>É a versão de verdade. Cada vaca é o <span class="mono">cow.py</span> rodando como um processo separado: uma janela sem borda, transparente e sempre por cima, com o contador de vacas no canto da tela.</p>
+        <p>Lê o uso real de CPU e RAM com <span class="mono">psutil</span> e o da GPU pela <span class="mono">nvidia-smi</span> (só placas NVIDIA).</p>
+        <a class="btn" href="#rodar">Como rodar</a>
+      </article>
+
+      <article class="card web">
+        <span class="selo">HTML · JavaScript</span>
+        <h3>Web</h3>
+        <p>Cada vaca é uma janela real do navegador, movida com <span class="mono">window.moveTo</span>, com o mesmo <span class="mono">vaca.png</span> e o mesmo mugido. A página do teste é o fundo, com grid e a marca na parede.</p>
+        <p>Navegador não mostra o uso de CPU, RAM e GPU. Por isso o limite vem da queda de FPS, do lag e da memória JS. No fim dá pra baixar o JSON.</p>
+        <a class="btn principal" href="teste.html" style="font-size:16px">Abrir o teste</a>
+      </article>
+    </div>
+
+    <div class="tabela-rolagem">
+      <table>
+        <thead><tr><th></th><th>Original</th><th>Web</th></tr></thead>
+        <tbody>
+          <tr><td>Cada vaca</td><td>Processo Python (<span class="mono">cow.py</span>) com janela Qt</td><td>Janela de navegador (pop-up)</td></tr>
+          <tr><td>Janela da vaca</td><td>Sem borda, transparente, sempre por cima</td><td>Com barra de título, fundo branco, sem "sempre por cima"</td></tr>
+          <tr><td>Como mede</td><td>CPU e RAM (psutil), GPU NVIDIA (nvidia-smi)</td><td>Queda de FPS, lag do navegador e heap JS (Chrome/Edge)</td></tr>
+          <tr><td>Limite</td><td>90% de qualquer componente</td><td>FPS 70% de queda, lag 80%, RAM 90%</td></tr>
+          <tr><td>Máximo de vacas</td><td>200</td><td>100</td></tr>
+          <tr><td>Contador</td><td>Overlay no canto da tela</td><td>No canto da página do teste</td></tr>
+          <tr><td>Requisitos</td><td>Python 3, PyQt5, psutil. Linux ou Windows</td><td>Navegador moderno, pop-ups liberados, servidor web</td></tr>
+          <tr><td>Recorde</td><td><span class="mono">.benchmoo_best.json</span> na pasta do programa</td><td>Download do <span class="mono">benchmoo_best.json</span>, mesmo formato</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="nota">Os MooScores das duas versões não são comparáveis: medem coisas diferentes e têm tetos diferentes.</p>
+  </div>
+</section>
+
+<!-- ============================ RODAR ============================ -->
+<section id="rodar">
+  <div class="wrap">
+    <h2>Como rodar</h2>
+    <div class="rodar">
+      <div class="card">
+        <h3>Original</h3>
+<pre>pip install PyQt5 psutil
+python3 main.py</pre>
+        <ul>
+          <li>Deixa o <span class="mono">cow.py</span>, o <span class="mono">vaca.png</span> e o <span class="mono">vaca_mugido.mp3</span> na mesma pasta do programa.</li>
+          <li>Para sair: botão "Parar e sair", fechar a janela ou Ctrl+C no terminal.</li>
+          <li>Sem <span class="mono">nvidia-smi</span>, ele mede só CPU e RAM.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Web</h3>
+        <ul>
+          <li>Acesse: https://pixelcatBR.github.io/BenchMoo/teste.html</li>
+          <li>Libera os pop-ups para o site, senão só a primeira vaca abre.</li>
+          <li>No Linux com tiling ou Wayland, as janelas das vacas precisam ser flutuantes para andar. A própria página do teste explica como.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="acoes" style="margin-top:24px" id="links-extra" hidden></p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">BenchMoo 🐮 · um benchmark que não precisava existir.</div>
+</footer>
+
+<script>
+"use strict";
+/* ---- links opcionais: preenche e eles aparecem sozinhos ---- */
+const GITHUB_URL = "";    // ex.: "https://github.com/teu-usuario/benchmoo"
+const RANKING_URL = "";   // ex.: link do site de recordes
+
+(function links() {
+  const box = document.getElementById("links-extra");
+  const add = (url, txt) => {
+    if (!url) return;
+    const a = document.createElement("a");
+    a.className = "btn"; a.href = url; a.textContent = txt; a.style.marginRight = "12px";
+    box.append(a); box.hidden = false;
+  };
+  add(GITHUB_URL, "Código no GitHub");
+  add(RANKING_URL, "Ver o ranking");
+})();
+
+/* ---- demo: o curral que dobra ---- */
+const MAX_DEMO = 128;
+const curral = document.getElementById("curral");
+const numEl = document.getElementById("demo-num");
+const legenda = document.getElementById("demo-legenda");
+const botao = document.getElementById("dobrar");
+let total = 0, imagemOk = false;
+
+function tamanho(n) { return n <= 8 ? 72 : n <= 32 ? 48 : n <= 64 ? 34 : 26; }
+
+function criaVaca() {
+  const d = document.createElement("span");
+  d.className = "vaca nova";
+  if (imagemOk) {
+    const i = new Image(); i.src = "vaca.png"; i.alt = ""; d.append(i);
+  } else {
+    d.textContent = "🐮";
+  }
+  return d;
+}
+
+function desenha(novas) {
+  curral.style.setProperty("--t", tamanho(total) + "px");
+  numEl.textContent = `x ${total}`;
+  legenda.className = "";
+  if (total >= MAX_DEMO) { legenda.textContent = "trava de segurança!"; legenda.className = "trava"; botao.textContent = "Recomeçar"; }
+  else if (total === 1) legenda.textContent = "uma vaca, tudo calmo";
+  else legenda.textContent = `${total} vacas, tudo sob controle`;
+  for (let k = 0; k < novas; k++) curral.append(criaVaca());
+}
+
+function dobrar() {
+  if (total >= MAX_DEMO) { curral.textContent = ""; total = 0; botao.textContent = "Dobrar as vacas"; }
+  const antes = total;
+  total = total === 0 ? 1 : Math.min(total * 2, MAX_DEMO);
+  desenha(total - antes);
+}
+
+botao.addEventListener("click", dobrar);
+
+// usa o vaca.png se existir, senão o emoji
+const teste = new Image();
+teste.onload = () => { imagemOk = true; curral.textContent = ""; total = 0; dobrar(); };
+teste.onerror = () => { imagemOk = false; dobrar(); };
+teste.src = "vaca.png";
+</script>
+</body>
+</html>
