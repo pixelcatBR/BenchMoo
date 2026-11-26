@@ -60,7 +60,7 @@ python3 main.py
 
 3. execute o arquivo run.bat
 
-# Android
+## Android
 
 1. baixe a release com o BenchMoo.apk
 2. abra o arquivo com o gerenciador de pacotes
