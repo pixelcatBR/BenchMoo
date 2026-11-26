@@ -133,6 +133,7 @@
 
 <!-- ============================ MENU ============================ -->
 <main id="menu">
+  <p style="margin:0 0 14px"><a href="index.html">← Sobre o projeto</a></p>
   <header class="hero">
     <span id="logo" style="flex:none"></span>
     <div>
@@ -277,6 +278,8 @@ const CFG = {
 const ARQ = { png: "vaca.png", mp3: "vaca_mugido.mp3" };   // ficam na MESMA pasta do index.html
 const COW_W = 130, COW_H = 130;
 const RECORDE_KEY = "benchmoo_best";
+// o main.py grava "gargalo" como CPU, RAM ou GPU; aqui cada sinal da web vira um desses
+const GARGALO_JSON = { FPS: "GPU", LAG: "CPU", RAM: "RAM" };
 const ROTULO = { FPS: "FPS (queda)", LAG: "Lag", RAM: "RAM (heap JS)" };
 
 /* ------------------------------ utilidades ------------------------------ */
@@ -737,7 +740,7 @@ function finalizar(motivo) {
 
   if (S.score > (S.recorde.score || 0)) {
     S.novoRecorde = true;
-    S.recorde = { score: S.score, fps_medio: S.fpsMedioCarga, vacas: S.pico, gargalo: g.nome };
+    S.recorde = { score: S.score, fps_medio: S.fpsMedioCarga, vacas: S.pico, gargalo: GARGALO_JSON[g.nome] };
     try { localStorage.setItem(RECORDE_KEY, JSON.stringify(S.recorde)); } catch (_) {}
   }
 
@@ -750,10 +753,10 @@ function finalizar(motivo) {
   atualizarTela(0);
   $("#contador-num").textContent = `x ${S.pico}`;
   $("#res-score").textContent = `MooScore ${S.score.toFixed(0)}`;
-  $("#res-calc").textContent = `${S.pico} vacas no pico x ${S.fpsMedioCarga.toFixed(1)} FPS sob carga  |  gargalo: ${g.nome}`;
+  $("#res-calc").textContent = `${S.pico} vacas no pico x ${S.fpsMedioCarga.toFixed(1)} FPS sob carga  |  gargalo: ${g.nome} (no JSON: ${GARGALO_JSON[g.nome]})`;
   $("#res-recorde").hidden = !S.novoRecorde;
   $("#res-nota").textContent = S.novoRecorde
-    ? "O JSON baixado é este resultado, o teu melhor até agora."
+    ? "O JSON baixado (.benchmoo_best.json) é este resultado, o teu melhor até agora."
     : `Não bateu o recorde (${Math.round(S.recorde.score)}). O JSON baixado é o teu melhor resultado.`;
   $("#resultado").hidden = false;
   $("#botoes-teste").hidden = true;
@@ -763,11 +766,17 @@ function finalizar(motivo) {
 function baixarJson() {
   const r = S && S.recorde && S.recorde.score ? S.recorde : carregaRecorde();
   // mesmo formato do .benchmoo_best.json do programa em Python
-  const dados = { score: r.score, fps_medio: r.fps_medio, vacas: r.vacas, gargalo: r.gargalo };
+  // exatamente a estrutura do .benchmoo_best.json do main.py: score, fps_medio, vacas, gargalo (nessa ordem, indent 2)
+  const dados = {
+    score: Number(r.score),
+    fps_medio: Number(r.fps_medio),
+    vacas: Math.round(Number(r.vacas)),
+    gargalo: String(GARGALO_JSON[r.gargalo] || r.gargalo),
+  };
   const blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "benchmoo_best.json";
+  a.download = ".benchmoo_best.json";
   document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
