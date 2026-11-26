@@ -107,6 +107,15 @@
   td:first-child { font-weight: 700; width: 22%; }
   .nota { color: var(--suave); margin: 14px 0 0; }
 
+  /* ---------- download ---------- */
+  .download { display: grid; grid-template-columns: 1.2fr 1fr; gap: 18px; align-items: stretch; }
+  .download .principal-card { border: 2px solid var(--grama); background: #fff; }
+  .download h3 { margin: 0 0 8px; font-size: 24px; letter-spacing: -.02em; }
+  .download p { margin: 0 0 16px; }
+  .download .acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+  .download ul { margin: 0; padding-left: 20px; }
+  .download li { margin: 5px 0; }
+
   /* ---------- rodar ---------- */
   .rodar { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
   .rodar h3 { margin: 0 0 10px; font-size: 22px; letter-spacing: -.02em; }
@@ -117,7 +126,7 @@
   footer { padding: 30px 0 56px; color: var(--suave); border-top: 1px solid var(--linha); background: rgba(255,255,255,.9); }
 
   @media (max-width: 760px) {
-    .curral-box, .versoes, .rodar { grid-template-columns: 1fr; }
+    .curral-box, .versoes, .rodar, .download { grid-template-columns: 1fr; }
     section { padding: 40px 0; }
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .vaca.nova { animation: none; } }
@@ -133,6 +142,7 @@
     <p class="sub">Quantas vacas a tua máquina aguenta?</p>
     <div class="acoes">
       <a class="btn principal" href="teste.html">Testar no navegador</a>
+      <a class="btn" href="#download">Baixar o código</a>
       <a class="btn" href="#versoes">Ver as duas versões</a>
     </div>
 
@@ -172,7 +182,7 @@
 <section id="versoes">
   <div class="wrap">
     <h2>Duas versões</h2>
-    <p class="lead">A original é um programa de desktop em Python. A web roda no navegador, sem instalar nada.</p>
+    <p class="lead">A original é um programa de desktop em Python, que roda local na tua máquina. A web já está no ar e roda direto no navegador, sem instalar nada.</p>
 
     <div class="versoes">
       <article class="card" id="original">
@@ -180,6 +190,7 @@
         <h3>Original</h3>
         <p>É a versão de verdade. Cada vaca é o <span class="mono">cow.py</span> rodando como um processo separado: uma janela sem borda, transparente e sempre por cima, com o contador de vacas no canto da tela.</p>
         <p>Lê o uso real de CPU e RAM com <span class="mono">psutil</span> e o da GPU pela <span class="mono">nvidia-smi</span> (só placas NVIDIA).</p>
+        <a class="btn" href="#download">Baixar</a>
         <a class="btn" href="#rodar">Como rodar</a>
       </article>
 
@@ -202,12 +213,40 @@
           <tr><td>Limite</td><td>90% de qualquer componente</td><td>FPS 70% de queda, lag 80%, RAM 90%</td></tr>
           <tr><td>Máximo de vacas</td><td>200</td><td>100</td></tr>
           <tr><td>Contador</td><td>Overlay no canto da tela</td><td>No canto da página do teste</td></tr>
-          <tr><td>Requisitos</td><td>Python 3, PyQt5, psutil. Linux ou Windows</td><td>Navegador moderno, pop-ups liberados, servidor web</td></tr>
+          <tr><td>Requisitos</td><td>Python 3, PyQt5, psutil. Linux ou Windows</td><td>Navegador moderno e pop-ups liberados. Já está no GitHub Pages, não precisa de servidor</td></tr>
           <tr><td>Recorde</td><td><span class="mono">.benchmoo_best.json</span> na pasta do programa</td><td>Download do <span class="mono">benchmoo_best.json</span>, mesmo formato</td></tr>
         </tbody>
       </table>
     </div>
     <p class="nota">Os MooScores das duas versões não são comparáveis: medem coisas diferentes e têm tetos diferentes.</p>
+  </div>
+</section>
+
+<!-- ============================ DOWNLOAD ============================ -->
+<section id="download">
+  <div class="wrap">
+    <h2>Download</h2>
+    <p class="lead">O código do BenchMoo está no GitHub. Baixa pra rodar a versão original (Python) na tua máquina, ou pra dar uma olhada em como tudo funciona.</p>
+
+    <div class="download">
+      <div class="card principal-card">
+        <span class="selo">GitHub · pixelcatBR</span>
+        <h3 style="margin-top:10px">pixelcatBR/BenchMoo</h3>
+        <p>Abre o repositório e clica em <b>Code → Download ZIP</b>, ou clona com o git.</p>
+        <div class="acoes">
+          <a class="btn principal" href="https://github.com/pixelcatBR/BenchMoo" target="_blank" rel="noopener">Baixar no GitHub</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Ou clona pelo terminal</h3>
+<pre>git clone https://github.com/pixelcatBR/BenchMoo.git
+cd BenchMoo</pre>
+        <ul>
+          <li>Só precisa baixar pra usar a versão <b>original</b>.</li>
+          <li>A versão <b>web</b> não precisa de download: é só abrir o <a href="teste.html">teste no navegador</a>.</li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -217,10 +256,11 @@
     <h2>Como rodar</h2>
     <div class="rodar">
       <div class="card">
-        <h3>Original</h3>
+        <h3>Original (local)</h3>
 <pre>pip install PyQt5 psutil
 python3 main.py</pre>
         <ul>
+          <li>Baixa o código na seção <a href="#download">Download</a> e roda de dentro da pasta.</li>
           <li>Deixa o <span class="mono">cow.py</span>, o <span class="mono">vaca.png</span> e o <span class="mono">vaca_mugido.mp3</span> na mesma pasta do programa.</li>
           <li>Para sair: botão "Parar e sair", fechar a janela ou Ctrl+C no terminal.</li>
           <li>Sem <span class="mono">nvidia-smi</span>, ele mede só CPU e RAM.</li>
@@ -229,10 +269,11 @@ python3 main.py</pre>
       <div class="card">
         <h3>Web</h3>
         <ul>
-          <li>Acesse: </li>
-          <pre>
-            https://pixelcatBR.github.io/BenchMoo/teste.html
-          </pre>
+          <li>Já está no ar no GitHub Pages, é só abrir:</li>
+        </ul>
+<pre><a href="https://pixelcatBR.github.io/BenchMoo/teste.html" style="color:#8fe3a1">https://pixelcatBR.github.io/BenchMoo/teste.html</a></pre>
+        <ul>
+          <li>Não precisa instalar nada nem rodar servidor.</li>
           <li>Libera os pop-ups para o site, senão só a primeira vaca abre.</li>
           <li>No Linux com tiling ou Wayland, as janelas das vacas precisam ser flutuantes para andar. A própria página do teste explica como.</li>
         </ul>
@@ -251,8 +292,8 @@ python3 main.py</pre>
 <script>
 "use strict";
 /* ---- links opcionais: preenche e eles aparecem sozinhos ---- */
-const GITHUB_URL = "";    // ex.: "https://github.com/teu-usuario/benchmoo"
-const RANKING_URL = "";   // ex.: link do site de recordes
+const GITHUB_URL = "https://github.com/pixelcatBR/BenchMoo";    // o link do GitHub já está na seção Download
+const RANKING_URL = "https://pixelcatBR.github.io/MooScore";   // ex.: link do site de recordes
 
 (function links() {
   const box = document.getElementById("links-extra");
