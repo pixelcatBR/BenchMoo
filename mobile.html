@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b6d2f">
+<title>BenchMoo</title>
+<style>
+:root{--bg:#fdfcf5;--surf:#f1f0e8;--surf2:#e4e3d8;--on:#1b1c18;--on2:#5a5d52;--pri:#1b6d2f;--onpri:#fff;--pric:#a5f4a8;--onpric:#00210a;--err:#ba1a1a;--out:#c4c8bb;--grid:47,110,200;--sans:Roboto,"Segoe UI",system-ui,sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12140f;--surf:#1d1f1a;--surf2:#282a24;--on:#e3e3db;--on2:#a9ada0;--pri:#8ad98f;--onpri:#003912;--pric:#005320;--onpric:#a5f4a8;--err:#ffb4ab;--out:#44483d}}
+:root[data-theme="dark"]{--bg:#12140f;--surf:#1d1f1a;--surf2:#282a24;--on:#e3e3db;--on2:#a9ada0;--pri:#8ad98f;--onpri:#003912;--pric:#005320;--onpric:#a5f4a8;--err:#ffb4ab;--out:#44483d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--on);line-height:1.45;overflow-x:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+body.teste{background-image:linear-gradient(rgba(var(--grid),.09) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--grid),.09) 1px,transparent 1px),linear-gradient(rgba(var(--grid),.17) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--grid),.17) 1px,transparent 1px);background-size:24px 24px,24px 24px,120px 120px,120px 120px;background-position:-1px -1px;overflow:hidden}
+.marca{position:fixed;inset:0;display:grid;place-items:center;font-weight:900;letter-spacing:-.05em;font-size:22vw;color:var(--on);opacity:.05;pointer-events:none;user-select:none}
+#cv{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;height:64px;padding:0 8px 0 16px;background:var(--bg)}
+body.teste .bar{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);background:transparent}
+.bar .tt{flex:1;min-width:0}
+.bar h1{margin:0;font-size:22px;font-weight:500;line-height:1.2}
+.bar .sub{font-size:12px;color:var(--on2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon{width:48px;height:48px;border:0;border-radius:50%;background:transparent;color:var(--on);font-size:22px;cursor:pointer}
+.chip{background:var(--pric);color:var(--onpric);border-radius:8px;padding:6px 12px;font-weight:500;font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer;position:relative;overflow:hidden}
+button::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .15s}
+button:active::after{opacity:.14}
+button:focus-visible{outline:3px solid var(--pri);outline-offset:2px}
+.btn{height:40px;padding:0 24px;border-radius:20px;border:1px solid var(--out);background:transparent;color:var(--pri);font-weight:500}
+.btn.fill{background:var(--pri);color:var(--onpri);border-color:var(--pri)}
+.btn.tonal{background:var(--pric);color:var(--onpric);border-color:transparent}
+.btn.text{border-color:transparent}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;height:56px;padding:0 24px 0 18px;border:0;border-radius:16px;background:var(--pric);color:var(--onpric);font-size:16px;font-weight:500;box-shadow:0 3px 8px rgba(0,0,0,.28)}
+main{padding:4px 16px 104px;max-width:640px;margin:0 auto}
+.hero{display:flex;align-items:center;gap:16px;margin:8px 0 20px}
+.hero .vaca{font-size:72px;line-height:1}
+.hero p{margin:0;color:var(--on2);font-size:16px}
+.hero h2{margin:0;font-size:32px;font-weight:500}
+.card{background:var(--surf);border-radius:16px;padding:16px 20px;margin-bottom:12px}
+.card.destaque{background:var(--pric);color:var(--onpric)}
+.card h3{margin:0 0 8px;font-size:16px;font-weight:500}
+.card p,.card ul,.card ol{margin:0;font-size:14px}
+.card ul,.card ol{padding-left:20px}
+.card li{margin:4px 0}
+dl.sis{margin:0;display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;font-size:14px}
+dl.sis dt{color:var(--on2)}dl.sis dd{margin:0;word-break:break-word}
+.rec{font-size:13px;color:var(--on2);margin:8px 4px}
+.mono{font-family:var(--mono);font-size:12px}
+pre{margin:0;white-space:pre-wrap;font-family:var(--mono);font-size:12px}
+/* bottom sheet */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:4;background:var(--surf);border-radius:28px 28px 0 0;padding:6px 16px calc(14px + env(safe-area-inset-bottom,0px));max-height:62vh;overflow:auto;box-shadow:0 -2px 12px rgba(0,0,0,.18)}
+.handle{display:block;width:40px;height:5px;border-radius:3px;background:var(--out);margin:6px auto 10px;border:0;padding:0}
+.sheet .fase{font-size:14px;margin:0 0 10px}
+.linha{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:4px 12px;margin:8px 0}
+.linha .txt{grid-column:1/-1;color:var(--on2)}
+.barra{position:relative;height:12px;border-radius:6px;background:var(--surf2);overflow:hidden}
+.barra i{position:absolute;inset:0 auto 0 0;width:0;background:var(--pri);transition:width .25s}
+.barra::after{content:"";position:absolute;top:0;bottom:0;left:var(--lim);width:2px;background:var(--err)}
+.det{margin-top:12px;display:grid;gap:12px}
+.det h3{margin:0 0 4px;font-size:14px;font-weight:500}
+#historico{max-height:150px;overflow:auto;background:var(--bg);border-radius:12px;padding:10px}
+.scrim{position:fixed;inset:0;z-index:7;background:rgba(0,0,0,.4)}
+.modal{position:fixed;left:0;right:0;bottom:0;z-index:8;background:var(--bg);border-radius:28px 28px 0 0;padding:20px 24px calc(20px + env(safe-area-inset-bottom,0px));max-width:640px;margin:0 auto}
+.modal .score{font-size:48px;font-weight:500;line-height:1.1;color:var(--pri)}
+.modal .recorde{margin:8px 0 0;background:var(--pric);color:var(--onpric);display:inline-block;padding:4px 12px;border-radius:8px;font-weight:500}
+.acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+#json{width:100%;margin-top:12px;height:90px;background:var(--surf);color:var(--on);border:1px solid var(--out);border-radius:12px;padding:8px;font-family:var(--mono);font-size:12px}
+.snack{position:fixed;left:16px;right:16px;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:9;background:var(--on);color:var(--bg);border-radius:8px;padding:14px 16px;font-size:14px;max-width:560px;margin:0 auto;opacity:0;pointer-events:none;transition:opacity .2s}
+.snack.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.barra i,button::after{transition:none}}
+</style>
+</head>
+<body>
+<div class="marca" id="marca" hidden>benchmoo</div>
+<canvas id="cv" hidden></canvas>
+
+<header class="bar">
+  <button class="icon" id="fechar" aria-label="Parar teste" hidden>✕</button>
+  <div class="tt"><h1 id="titulo">BenchMoo</h1><div class="sub" id="subtitulo">Benchmark de vacas</div></div>
+  <span class="chip" id="chip" hidden>🐮 × 0</span>
+</header>
+
+<main id="menu">
+  <div class="hero">
+    <span class="vaca">🐮</span>
+    <div><h2>BenchMoo</h2><p>Quantas vacas o teu celular aguenta?</p></div>
+  </div>
+  <section class="card">
+    <h3>Como funciona</h3>
+    <ol>
+      <li>Cada vaca é desenhada num canvas, sem janelas. Elas entram, mugem e saem.</li>
+      <li>A cada 2 s as vacas dobram: 1, 2, 4, 8…</li>
+      <li>Isso continua até algum componente bater o limite. Esse é o nível máximo.</li>
+      <li>No nível máximo o app segura a carga por 4 s medindo o FPS.</li>
+      <li>MooScore = vacas no pico × FPS médio sob carga.</li>
+    </ol>
+  </section>
+  <section class="card"><h3>Teu sistema</h3><dl class="sis" id="sistema"></dl></section>
+  <section class="card">
+    <h3>O que é medido</h3>
+    <ul>
+      <li><b>FPS</b>: queda em relação ao melhor FPS visto (limite: <span id="lim-fps"></span>%).</li>
+      <li><b>Lag</b>: atraso do navegador, em % de <span id="lag-max"></span> ms (limite: <span id="lim-lag"></span>%).</li>
+      <li><b>RAM</b>: memória JS da página, só no Chrome (limite: <span id="lim-ram"></span>%).</li>
+    </ul>
+  </section>
+  <section class="card destaque">
+    <h3>Antes de começar</h3>
+    <ul>
+      <li>Aumente o volume com cuidado: as vacas mugem juntas.</li>
+      <li>Feche apps pesados e ative o modo de desempenho, se tiver.</li>
+      <li>A tela fica ligada durante o teste. O limite é de <b id="max-vacas"></b> vacas.</li>
+    </ul>
+  </section>
+  <p class="rec" id="recorde-menu"></p>
+  <p class="rec mono audio-status"></p>
+</main>
+
+<section class="sheet" id="teste" hidden>
+  <button class="handle" id="alca" aria-label="Mostrar detalhes"></button>
+  <p class="fase" id="fase"></p>
+  <div id="comps"></div>
+  <div class="det" id="det" hidden>
+    <div><h3>FPS</h3><pre id="fps-info"></pre></div>
+    <div><h3>Cálculo</h3><pre id="calculo"></pre></div>
+    <div><h3>Sistema</h3><dl class="sis" id="sistema-teste"></dl></div>
+    <div><h3>Histórico</h3><pre id="historico"></pre></div>
+  </div>
+</section>
+
+<div class="scrim" id="scrim" hidden></div>
+<section class="modal" id="resultado" hidden role="dialog" aria-modal="true" aria-labelledby="res-t">
+  <h3 id="res-t" style="margin:0 0 4px;font-weight:500">Resultado</h3>
+  <div class="score" id="res-score">0</div>
+  <div class="mono" id="res-calc" style="margin-top:8px"></div>
+  <div class="recorde" id="res-recorde" hidden>Novo recorde!</div>
+  <p class="mono" id="res-nota" style="color:var(--on2)"></p>
+  <textarea id="json" readonly hidden></textarea>
+  <div class="acoes">
+    <button class="btn fill" id="compartilhar">Salvar JSON</button>
+    <button class="btn tonal" id="de-novo">Rodar de novo</button>
+    <button class="btn text" id="voltar">Menu</button>
+  </div>
+</section>
+
+<button class="fab" id="iniciar">▶&nbsp; Iniciar teste</button>
+<div class="snack" id="snack" role="status"></div>
+
+<script>
+"use strict";
+const CFG={LIMITES:{FPS:70,LAG:80,RAM:90},LAG_MAX_MS:200,MAX_SEGURANCA:4096,INTERVALO_MS:2000,SEGURAR_MS:4000,SUAVIZAR:3,AMOSTRA_MS:500};
+const ARQ={png:"vaca.png",mp3:"vaca_mugido.mp3"};
+const RECORDE_KEY="benchmoo_best";
+const GARGALO_JSON={FPS:"GPU",LAG:"CPU",RAM:"RAM"};
+const ROTULO={FPS:"FPS (queda)",LAG:"Lag",RAM:"RAM (heap JS)"};
+const T_ENTRA=3000,T_FICA=5500,T_FIM=8000;
+
+const $=s=>document.querySelector(s);
+const media=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const desvio=a=>{if(a.length<2)return 0;const m=media(a);return Math.sqrt(media(a.map(x=>(x-m)**2)))};
+const pad=(v,n)=>String(v).padStart(n," ");
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+
+let snackT=0;
+function snack(t){const s=$("#snack");s.textContent=t;s.classList.add("on");clearTimeout(snackT);snackT=setTimeout(()=>s.classList.remove("on"),3200)}
+
+/* ---------- sistema ---------- */
+function gpuNome(){try{const c=document.createElement("canvas");const gl=c.getContext("webgl")||c.getContext("experimental-webgl");if(!gl)return null;const e=gl.getExtension("WEBGL_debug_renderer_info");return e?gl.getParameter(e.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER)}catch{return null}}
+function preencheSistema(el){
+  const n=navigator;
+  const lista=[["CPU",(n.hardwareConcurrency||"?")+" threads"],["RAM",n.deviceMemory?"≈ "+n.deviceMemory+" GB":"não informada"],["GPU",gpuNome()||"não detectada"],["SO",(n.userAgentData&&n.userAgentData.platform)||n.platform||"?"],["Tela",screen.width+"×"+screen.height+" ("+window.devicePixelRatio+"x)"]];
+  el.textContent="";
+  for(const [k,v] of lista){const dt=document.createElement("dt");dt.textContent=k;const dd=document.createElement("dd");dd.textContent=v;el.append(dt,dd)}
+}
+
+/* ---------- sprite da vaca (desenhada no canvas) ---------- */
+const spr=document.createElement("canvas");spr.width=spr.height=128;
+(function(){const c=spr.getContext("2d");c.font="100px serif";c.textAlign="center";c.textBaseline="middle";c.fillText("🐮",64,70);
+  const im=new Image();im.onload=()=>{c.clearRect(0,0,128,128);const r=Math.min(128/im.width,128/im.height);c.drawImage(im,(128-im.width*r)/2,(128-im.height*r)/2,im.width*r,im.height*r)};im.src=ARQ.png})();
+
+/* ---------- áudio ---------- */
+let audioCtx=null,master=null,buf=null,audioEl=null,tentado=false,ultMoo=0;
+function setAudio(txt,ok){document.querySelectorAll(".audio-status").forEach(e=>{e.textContent=txt;e.style.color=ok?"var(--pri)":"var(--err)"})}
+function preparaAudio(){
+  audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+  audioCtx.resume();
+  if(!master){master=audioCtx.createGain();master.gain.value=.6;const c=audioCtx.createDynamicsCompressor();master.connect(c);c.connect(audioCtx.destination)}
+  if(!tentado){tentado=true;
+    fetch(ARQ.mp3).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>audioCtx.decodeAudioData(a))
+      .then(b=>{buf=b;setAudio("🔊 "+ARQ.mp3+" carregado",true)})
+      .catch(()=>{const a=new Audio();a.preload="auto";a.oncanplaythrough=()=>{audioEl=a;setAudio("🔊 "+ARQ.mp3+" carregado",true)};a.onerror=()=>setAudio("Som sintetizado: "+ARQ.mp3+" não foi encontrado na pasta do app.",false);a.src=ARQ.mp3})}
+}
+function tocarMugido(){
+  const agora=performance.now();if(agora-ultMoo<70)return;ultMoo=agora;   // limita mugidos por segundo
+  if(!audioCtx)return;if(audioCtx.state==="suspended")audioCtx.resume();
+  if(buf){const s=audioCtx.createBufferSource();s.buffer=buf;s.playbackRate.value=.9+Math.random()*.2;s.connect(master);s.start();return}
+  if(audioEl){audioEl.cloneNode().play().catch(()=>{});return}
+  const t=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type="sawtooth";o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(85,t+.9);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.2,t+.1);g.gain.exponentialRampToValueAtTime(.0001,t+1);
+  o.connect(g);g.connect(master);o.start(t);o.stop(t+1.05);
+}
+
+/* ---------- estado e vacas (renderização) ---------- */
+let S=null,worker=null,cows=[],frames=0,dpr=1,CW=0,CH=0,COW=64,wake=null;
+const cv=$("#cv"),ctx=cv.getContext("2d");
+
+function ajustaCanvas(){
+  dpr=Math.min(window.devicePixelRatio||1,2);
+  CW=window.innerWidth;CH=window.innerHeight;
+  cv.width=Math.round(CW*dpr);cv.height=Math.round(CH*dpr);
+  COW=Math.max(48,Math.min(72,CW*.15));
+}
+window.addEventListener("resize",()=>{if(S)ajustaCanvas()});
+
+function spawn(k){
+  const now=performance.now();
+  const ymin=90,ymax=Math.max(130,CH*.42-COW);
+  for(let i=0;i<k;i++){
+    cows.push({t0:now+Math.random()*350,y:ymin+Math.random()*(ymax-ymin),xc:CW*.1+Math.random()*(CW*.8-COW),ph:Math.random()*6.28,m:0});
+  }
+}
+
+function desenha(now){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const x0=-COW,x1=CW+COW;let j=0;
+  for(let i=0;i<cows.length;i++){
+    const c=cows[i],t=now-c.t0;
+    if(t>T_FIM)continue;
+    cows[j++]=c;
+    if(t<0)continue;
+    let x;
+    if(t<T_ENTRA)x=x0+(c.xc-x0)*ease(t/T_ENTRA);
+    else{
+      if(!c.m){c.m=1;tocarMugido()}
+      x=t<T_FICA?c.xc:c.xc+(x1-c.xc)*ease((t-T_FICA)/(T_FIM-T_FICA));
+    }
+    const y=c.y+Math.sin(t/170+c.ph)*5,r=Math.sin(t/230+c.ph)*.12,cs=Math.cos(r)*dpr,sn=Math.sin(r)*dpr;
+    ctx.setTransform(cs,sn,-sn,cs,(x+COW/2)*dpr,(y+COW/2)*dpr);
+    ctx.drawImage(spr,-COW/2,-COW/2,COW,COW);
+  }
+  cows.length=j;
+}
+
+function carregaRecorde(){try{return JSON.parse(localStorage.getItem(RECORDE_KEY))||{}}catch{return{}}}
+
+function novoEstado(){
+  const nomes=["FPS","LAG"].concat(performance.memory?["RAM"]:[]);
+  const comp={};nomes.forEach(k=>comp[k]={atual:0,leit:[],todas:[]});
+  return{fase:"multiplicando",pico:0,fps:0,fpsBase:0,fpsTodas:[],fpsCarga:[],comp,nomes,els:{},lagJanela:[],lagMs:0,alvo:0,
+    score:0,novoRecorde:false,recorde:carregaRecorde(),t0:performance.now(),fT0:performance.now(),
+    ultAmostra:Date.now(),ultMult:Date.now(),fimHold:0,motivo:""};
+}
+const suavizado=k=>media(S.comp[k].leit.slice(-CFG.SUAVIZAR));
+function gargalo(){
+  let m=S.nomes[0];
+  for(const k of S.nomes)if(suavizado(k)/CFG.LIMITES[k]>suavizado(m)/CFG.LIMITES[m])m=k;
+  const v=suavizado(m),l=CFG.LIMITES[m];return{nome:m,valor:v,limite:l,bateu:v>=l};
+}
+
+function createWorker(){
+  const w=new Worker(URL.createObjectURL(new Blob(["setInterval(()=>postMessage(Date.now()),100)"],{type:"text/javascript"})));
+  w.onmessage=e=>tick(e.data);return w;
+}
+
+function tick(ts){
+  if(!S||S.fase==="concluido")return;
+  const agora=Date.now();
+  S.lagJanela.push(Math.max(0,agora-ts));
+  if(S.fase==="segurando"&&cows.length<S.alvo)spawn(S.alvo-cows.length);   // mantém a carga constante
+  if(agora-S.ultAmostra>=CFG.AMOSTRA_MS){S.ultAmostra=agora;amostrar()}
+  if(S.fase==="multiplicando"&&agora-S.ultMult>=CFG.INTERVALO_MS){S.ultMult=agora;multiplicar()}
+  if(S.fase==="segurando"&&agora>=S.fimHold)finalizar(S.motivo);
+}
+
+function amostrar(){
+  const n=cows.length;S.pico=Math.max(S.pico,n);
+  const now=performance.now(),dt=now-S.fT0;
+  if(dt>0&&frames>0){
+    S.fps=frames*1000/dt;S.fpsTodas.push(S.fps);S.fpsBase=Math.max(S.fpsBase,S.fps);
+    if(S.fase==="segurando")S.fpsCarga.push(S.fps);
+  }
+  frames=0;S.fT0=now;
+  const queda=S.fpsBase?Math.max(0,100*(1-S.fps/S.fpsBase)):0;
+  S.lagMs=media(S.lagJanela);S.lagJanela=[];
+  const uso={FPS:queda,LAG:Math.min(100,100*S.lagMs/CFG.LAG_MAX_MS)};
+  if(performance.memory)uso.RAM=100*performance.memory.usedJSHeapSize/performance.memory.jsHeapSizeLimit;
+  for(const k of S.nomes){S.comp[k].atual=uso[k];S.comp[k].leit.push(uso[k]);S.comp[k].todas.push(uso[k])}
+  atualizarTela(n);
+}
+
+function multiplicar(){
+  if(S.fase!=="multiplicando")return;
+  const n=cows.length;
+  if(n===0){finalizar("as vacas acabaram antes de bater o limite");return}
+  logNivel(n);
+  const g=gargalo();
+  if(g.bateu)nivelMaximo(g.nome+" chegou em "+g.valor.toFixed(0)+"% com "+n+" vacas");
+  else if(n>=CFG.MAX_SEGURANCA)nivelMaximo("trava de segurança ("+CFG.MAX_SEGURANCA+" vacas)");
+  else spawn(Math.min(n,CFG.MAX_SEGURANCA-n));
+}
+function nivelMaximo(m){S.fase="segurando";S.motivo=m;S.alvo=cows.length;S.fimHold=Date.now()+CFG.SEGURAR_MS;log("--> NÍVEL MÁXIMO: "+m)}
+
+function logNivel(n){
+  const t=(performance.now()-S.t0)/1000;
+  log(pad(t.toFixed(1),5)+"s | "+pad(n,4)+" vacas | FPS "+pad(S.fps.toFixed(1),5)+" | "+S.nomes.map(k=>k+" "+pad(suavizado(k).toFixed(0),3)+"%").join(" | "));
+}
+function log(t){const h=$("#historico");h.textContent+=t+"\n";h.scrollTop=h.scrollHeight}
+
+/* ---------- tela ---------- */
+function montaComponentes(){
+  const box=$("#comps");box.textContent="";
+  for(const k of S.nomes){
+    const l=document.createElement("div");l.className="linha";
+    const nome=document.createElement("span");nome.textContent=ROTULO[k];
+    const b=document.createElement("div");b.className="barra";b.style.setProperty("--lim",CFG.LIMITES[k]+"%");
+    const i=document.createElement("i");b.append(i);
+    const txt=document.createElement("span");txt.className="mono txt";
+    l.append(nome,b,txt);box.append(l);S.els[k]={barra:i,txt};
+  }
+}
+
+function atualizarTela(n){
+  $("#chip").textContent="🐮 × "+n;
+  $("#titulo").textContent="Vacas: "+n;
+  const fases={multiplicando:"Dobrando as vacas até algum componente bater o limite…",segurando:"Nível máximo! Medindo o FPS sob carga…",concluido:"Concluído"};
+  $("#subtitulo").textContent=fases[S.fase];$("#fase").textContent=fases[S.fase];
+  for(const k of S.nomes){
+    const c=S.comp[k],pico=c.todas.length?Math.max(...c.todas):0;
+    S.els[k].barra.style.width=Math.min(100,c.atual)+"%";
+    S.els[k].txt.textContent="atual "+pad(c.atual.toFixed(0),3)+"% | média "+pad(media(c.todas).toFixed(0),3)+"% | pico "+pad(pico.toFixed(0),3)+"%"+(k==="LAG"?" ("+S.lagMs.toFixed(0)+" ms)":"");
+  }
+  if($("#det").hidden)return;
+  const l=S.fpsTodas,ln=[
+    "Atual : "+pad(S.fps.toFixed(1),6),
+    "Melhor: "+pad((l.length?Math.max(...l):0).toFixed(1),6),
+    "Média : "+pad(media(l).toFixed(1),6),
+    "Mínimo: "+pad((l.length?Math.min(...l):0).toFixed(1),6),
+    "Desvio: "+pad(desvio(l).toFixed(1),6)];
+  if(S.fpsCarga.length)ln.push("Média sob carga máxima: "+media(S.fpsCarga).toFixed(1));
+  if(S.recorde&&S.recorde.score)ln.push("Recorde de MooScore: "+Math.round(S.recorde.score));
+  $("#fps-info").textContent=ln.join("\n");
+  const g=gargalo();
+  $("#calculo").textContent=S.nomes.map(k=>ROTULO[k]+": "+suavizado(k).toFixed(0)+"% (limite "+CFG.LIMITES[k]+"%)").join("\n")+"\nGargalo: "+g.nome+" com "+g.valor.toFixed(0)+"% ("+(g.bateu?"NÍVEL MÁXIMO":"faltam "+(g.limite-g.valor).toFixed(0)+" pontos")+")";
+}
+
+/* ---------- final / recorde / JSON ---------- */
+function finalizar(motivo){
+  if(!S||S.fase==="concluido")return;
+  S.fase="concluido";
+  if(worker){worker.terminate();worker=null}
+  cows=[];ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);
+  soltaTela();
+  S.fpsMedioCarga=media(S.fpsCarga.length?S.fpsCarga:S.fpsTodas);
+  S.score=S.pico*S.fpsMedioCarga;
+  const g=gargalo();
+  if(S.score>(S.recorde.score||0)){
+    S.novoRecorde=true;
+    S.recorde={score:S.score,fps_medio:S.fpsMedioCarga,vacas:S.pico,gargalo:GARGALO_JSON[g.nome]};
+    try{localStorage.setItem(RECORDE_KEY,JSON.stringify(S.recorde))}catch(_){}
+  }
+  log("=== RESULTADO ===");log("Motivo do fim : "+motivo);
+  log("MooScore      : "+S.pico+" x "+S.fpsMedioCarga.toFixed(1)+" = "+S.score.toFixed(0));
+  atualizarTela(0);$("#chip").textContent="🐮 × "+S.pico;$("#titulo").textContent="Resultado";
+  $("#res-score").textContent="MooScore "+S.score.toFixed(0);
+  $("#res-calc").textContent=S.pico+" vacas × "+S.fpsMedioCarga.toFixed(1)+" FPS | gargalo: "+g.nome+" (JSON: "+GARGALO_JSON[g.nome]+")";
+  $("#res-recorde").hidden=!S.novoRecorde;
+  $("#res-nota").textContent=S.novoRecorde?"O JSON é este resultado, o teu melhor até agora.":"Não bateu o recorde ("+Math.round(S.recorde.score)+"). O JSON é o teu melhor resultado.";
+  $("#json").hidden=true;$("#teste").hidden=true;
+  $("#scrim").hidden=false;$("#resultado").hidden=false;
+}
+
+function jsonRecorde(){
+  const r=S&&S.recorde&&S.recorde.score?S.recorde:carregaRecorde();
+  return JSON.stringify({score:Number(r.score),fps_medio:Number(r.fps_medio),vacas:Math.round(Number(r.vacas)),gargalo:String(GARGALO_JSON[r.gargalo]||r.gargalo)},null,2);
+}
+async function salvarJson(){
+  const txt=jsonRecorde();
+  try{
+    const f=new File([txt],".benchmoo_best.json",{type:"application/json"});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}
+    if(navigator.share){await navigator.share({title:"BenchMoo",text:txt});return}
+  }catch(e){if(e&&e.name==="AbortError")return}
+  try{await navigator.clipboard.writeText(txt);snack("JSON copiado")}
+  catch{const j=$("#json");j.hidden=false;j.value=txt;j.select();snack("Copie o texto abaixo")}
+}
+
+/* ---------- telas e controles ---------- */
+async function pedeTela(){try{if(navigator.wakeLock)wake=await navigator.wakeLock.request("screen")}catch(_){}}
+function soltaTela(){try{if(wake){wake.release();wake=null}}catch(_){}}
+
+function mostra(tela){
+  const t=tela==="teste";
+  $("#menu").hidden=t;$("#teste").hidden=!t;$("#marca").hidden=!t;cv.hidden=!t;
+  $("#fechar").hidden=!t;$("#chip").hidden=!t;$("#iniciar").hidden=t;
+  $("#scrim").hidden=true;$("#resultado").hidden=true;
+  document.body.classList.toggle("teste",t);
+  if(!t){$("#titulo").textContent="BenchMoo";$("#subtitulo").textContent="Benchmark de vacas";atualizaMenu()}
+  window.scrollTo(0,0);
+}
+function atualizaMenu(){const r=carregaRecorde();$("#recorde-menu").textContent=r.score?"Teu recorde neste aparelho: MooScore "+Math.round(r.score)+" ("+r.vacas+" vacas)":""}
+
+function iniciar(){
+  preparaAudio();pedeTela();
+  S=novoEstado();cows=[];frames=0;
+  mostra("teste");ajustaCanvas();
+  $("#historico").textContent="";$("#det").hidden=true;
+  preencheSistema($("#sistema-teste"));montaComponentes();
+  spawn(1);atualizarTela(1);
+  worker=createWorker();
+  const mine=S;
+  (function loop(now){if(S!==mine||S.fase==="concluido")return;frames++;desenha(now);requestAnimationFrame(loop)})(performance.now());
+}
+function pararESair(){
+  if(worker){worker.terminate();worker=null}
+  cows=[];S=null;soltaTela();mostra("menu");
+}
+
+$("#iniciar").addEventListener("click",iniciar);
+$("#fechar").addEventListener("click",pararESair);
+$("#voltar").addEventListener("click",pararESair);
+$("#de-novo").addEventListener("click",()=>{pararESair();iniciar()});
+$("#compartilhar").addEventListener("click",salvarJson);
+$("#alca").addEventListener("click",()=>{const d=$("#det");d.hidden=!d.hidden;if(S)atualizarTela(cows.length)});
+document.addEventListener("visibilitychange",()=>{if(S&&S.fase!=="concluido"&&!document.hidden)pedeTela()});
+
+/* ---------- início ---------- */
+preencheSistema($("#sistema"));
+$("#lim-fps").textContent=CFG.LIMITES.FPS;$("#lim-lag").textContent=CFG.LIMITES.LAG;
+$("#lag-max").textContent=CFG.LAG_MAX_MS;$("#lim-ram").textContent=CFG.LIMITES.RAM;
+$("#max-vacas").textContent=CFG.MAX_SEGURANCA;
+atualizaMenu();
+</script>
+</body>
+</html>
