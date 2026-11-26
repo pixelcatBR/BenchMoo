@@ -13,6 +13,14 @@ disponível em:
 https://pixelcatbr.github.io/MooScore/
 ```
 
+# BenchMoo Web
+
+Agora o BenchMoo possuí uma versão web. Ela é limitada pelas limitações do navegador, mas funciona.
+
+Para testar, basta acessar:
+```site
+https://pixelcatbr.github.io/BenchMoo/teste.html
+```
 # Funcionalidades
 
 O BenchMoo inclui várias funcionalidades como:
