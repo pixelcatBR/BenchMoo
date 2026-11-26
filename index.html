@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BenchMoo 🐮 — quantas vacas a tua máquina aguenta?</title>
-<meta name="description" content="BenchMoo é um benchmark meme: dobra vacas até a máquina não aguentar mais. Versão original em Python e versão web.">
+<meta name="description" content="BenchMoo é um benchmark meme: dobra vacas até a máquina não aguentar mais. Versão original em Python e versão web, com ranking de MooScore.">
 <style>
   :root {
     --tinta: #1b2430;
@@ -61,7 +61,7 @@
   .hero .wrap { position: relative; z-index: 1; }
   .hero h1 { margin: 0; font-size: clamp(56px, 12vw, 128px); line-height: .9; letter-spacing: -.06em; font-weight: 900; }
   .hero .sub { font-size: clamp(18px, 2.4vw, 24px); max-width: 30ch; margin: 18px 0 26px; font-weight: 600; letter-spacing: -.01em; }
-  .hero .acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero .acoes { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
 
   /* ---------- curral (demo) ---------- */
   .curral-box { margin-top: 36px; display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: stretch; }
@@ -77,6 +77,11 @@
   .num { font-size: 64px; font-weight: 900; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
   .num small { display: block; font-size: 14px; font-weight: 600; letter-spacing: 0; color: var(--suave); margin-top: 6px; }
   .trava { color: var(--alerta); font-weight: 800; }
+
+  /* ---------- ranking ---------- */
+  .rank-card { border: 2px solid var(--grama); background: #fff; }
+  .rank-card .passos { margin-bottom: 22px; }
+  .rank-card .acoes { display: flex; gap: 12px; flex-wrap: wrap; }
 
   /* ---------- como funciona ---------- */
   .passos { list-style: none; margin: 0 0 28px; padding: 0; display: grid; gap: 12px; counter-reset: p; }
@@ -124,6 +129,7 @@
   .rodar li { margin: 5px 0; }
 
   footer { padding: 30px 0 56px; color: var(--suave); border-top: 1px solid var(--linha); background: rgba(255,255,255,.9); }
+  footer a { font-weight: 700; }
 
   @media (max-width: 760px) {
     .curral-box, .versoes, .rodar, .download { grid-template-columns: 1fr; }
@@ -142,6 +148,7 @@
     <p class="sub">Quantas vacas a tua máquina aguenta?</p>
     <div class="acoes">
       <a class="btn principal" href="teste.html">Testar no navegador</a>
+      <a class="btn" href="#ranking">🏆 Ver o ranking</a>
       <a class="btn" href="#download">Baixar o código</a>
       <a class="btn" href="#versoes">Ver as duas versões</a>
     </div>
@@ -157,6 +164,27 @@
 </header>
 
 <main>
+<!-- ============================ RANKING ============================ -->
+<section class="ranking" id="ranking">
+  <div class="wrap">
+    <h2>Ranking</h2>
+    <p class="lead">Rodou o teste e fez um MooScore bom? Manda o teu recorde pro ranking e compara com o pessoal.</p>
+
+    <div class="card rank-card">
+      <ol class="passos">
+        <li><div><b>Roda o teste</b><span>Na versão web ou na original em Python. Ele dobra as vacas até a máquina chegar no limite.</span></div></li>
+        <li><div><b>Pega o teu recorde</b><span>O MooScore (vacas no pico × FPS médio sob carga) fica salvo num arquivo <span class="mono">.json</span>.</span></div></li>
+        <li><div><b>Envia no site do ranking</b><span>Manda o <span class="mono">.json</span> lá e vê em que posição a tua máquina ficou.</span></div></li>
+      </ol>
+      <div class="acoes">
+        <a class="btn principal" href="https://pixelcatBR.github.io/MooScore" target="_blank" rel="noopener">Abrir o ranking</a>
+        <a class="btn" href="teste.html">Fazer meu teste</a>
+      </div>
+    </div>
+    <p class="nota">Os MooScores da versão original e da web não são comparáveis: medem coisas diferentes e têm tetos diferentes.</p>
+  </div>
+</section>
+
 <!-- ============================ COMO FUNCIONA ============================ -->
 <section id="como">
   <div class="wrap">
@@ -286,14 +314,13 @@ python3 main.py</pre>
 </main>
 
 <footer>
-  <div class="wrap">BenchMoo 🐮 · um benchmark que não precisava existir.</div>
+  <div class="wrap">BenchMoo 🐮 · um benchmark que não precisava existir. · <a href="https://pixelcatBR.github.io/MooScore" target="_blank" rel="noopener">🏆 Ranking</a></div>
 </footer>
 
 <script>
 "use strict";
-/* ---- links opcionais: preenche e eles aparecem sozinhos ---- */
-const GITHUB_URL = "https://github.com/pixelcatBR/BenchMoo";    // o link do GitHub já está na seção Download
-const RANKING_URL = "https://pixelcatBR.github.io/MooScore";   // ex.: link do site de recordes
+/* ---- link extra: o ranking agora tem destaque próprio, então aqui fica só o GitHub ---- */
+const GITHUB_URL = "https://github.com/pixelcatBR/BenchMoo";
 
 (function links() {
   const box = document.getElementById("links-extra");
@@ -304,7 +331,6 @@ const RANKING_URL = "https://pixelcatBR.github.io/MooScore";   // ex.: link do s
     box.append(a); box.hidden = false;
   };
   add(GITHUB_URL, "Código no GitHub");
-  add(RANKING_URL, "Ver o ranking");
 })();
 
 /* ---- demo: o curral que dobra ---- */
